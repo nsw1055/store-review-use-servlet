@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+	</settings>
+	
+	<typeAliases>
+	<package name="org.gogildong.store.domain"/>
+	<package name="org.gogildong.review.domain"/>
+	<package name="org.gogildong.member.domain"/>
+	</typeAliases>
+	
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver"
+					value="oracle.jdbc.driver.OracleDriver" />
+				<property name="url"
+					value="jdbc:oracle:thin:@175.117.99.163:1521:XE" />
+				<property name="username" value="gogildong" />
+				<property name="password" value="gogildong" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<mappers>
+		<mapper resource = "org/gogildong/store/dao/StoreMapper.xml"/>
+		<mapper resource = "org/gogildong/review/dao/ReviewMapper.xml"/>
+		<mapper resource = "org/gogildong/member/dao/MemberMapper.xml"/>
+	</mappers>
+
+</configuration>

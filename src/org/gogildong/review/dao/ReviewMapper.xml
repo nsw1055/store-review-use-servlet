@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="review.dao.ReviewMapper">
+
+	<select id="getReview" resultType="Review">
+    <![CDATA[
+  select *
+		from
+     		(
+        	select /*+INDEX_DESC(tbl_review pk_review) */
+        	rownum rn, rno, sno, mid, context,
+        	score, img, regdate, updatedate, lcount
+       		from TBL_REVIEW
+        	where sno=#{sno} and rownum <=(#{page}*#{perSheet})
+         	)
+where rn > (#{page}-1) * #{perSheet}
+  ]]>
+	</select>
+
+<select id="getOne" resultType="Review">
+ 	<![CDATA[
+ 	select * from tbl_review where rno = #{rno}
+ 	]]>
+ 	</select>
+
+	<select id="getStore" resultType="Review">
+     <![CDATA[
+  select * from tbl_store where sno = #{sno}
+    ]]>
+	</select>
+
+	<insert id="insert" >
+    <![CDATA[    
+  insert into tbl_review (rno,sno,mid,context,score,img)
+  values(seq_review.nextval, #{sno}, #{mid}, #{context}, #{score},#{img})
+    ]]>
+	</insert>
+
+	<delete id="delete">
+     <![CDATA[
+   delete from tbl_review where rno = #{rno}
+     ]]>
+	</delete>
+
+	<update id="update">
+ 	<![CDATA[
+ 	update tbl_review set context = #{context} , score = #{score} , img = #{img},updateDate = sysdate
+ 	where rno = #{rno}
+ 	]]>
+ 	</update>
+	<select id="getTotal" resultType="int">
+	<![CDATA[
+		select count(rno) from tbl_review where sno = #{sno}
+	]]>
+	</select>
+		
+	<update id="updateRcount">
+     <![CDATA[
+   		update TBL_STORE set RCOUNT = (
+    		select count(sno) from TBL_REVIEW where sno = #{sno}
+    	)
+    	where sno = #{sno}
+     ]]>
+	</update>
+
+	
+	
+	
+	<!-- 좋아요 -->
+	
+	<insert id="insertLike">
+	<![CDATA[
+		insert into TBL_LIKE(RNO, MID)
+		VALUES (
+       	#{rno}, #{mid}
+       	)
+	]]>
+	</insert>
+	
+	<update id="updateLike">
+     <![CDATA[
+   		update TBL_LIKE set VALUE =1, UPDATEDATE = sysdate where MID = #{mid} and rno = #{rno}
+     ]]>
+	</update>
+
+	<update id="disLike">
+     <![CDATA[
+   		update TBL_LIKE set VALUE =0, UPDATEDATE = sysdate where MID = #{mid} and rno = #{rno}
+     ]]>
+	</update>
+	
+	<select id="selectlike" resultType="Like">
+	select * from tbl_like where rno = #{rno} and mid = #{mid}
+	</select>
+	
+	<select id="getValue" resultType="Like">
+	<!-- 
+	select * from tbl_like where rno = #{rno} and mid = #{mid} -->
+	<![CDATA[
+	select * from TBL_LIKE ,(select * from TBL_REVIEW where RNO = #{rno})review where TBL_LIKE.RNO=review.RNO
+	]]>
+	</select>
+	<update id="modifyOne" parameterType="map">
+	update tbl_review set context = #{context}, score=#{score}, img= #{img}, updatedate= sysdate
+	where rno = #{rno}
+</update>
+</mapper>

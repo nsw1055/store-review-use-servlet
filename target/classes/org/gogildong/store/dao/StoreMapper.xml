@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="store.dao.StoreMapper">
+
+	<select id="getAll" resultType="Store">
+    <![CDATA[
+    select *
+		from
+     		(
+        	select /*+INDEX_DESC(tbl_store pk_store) */
+        	rownum rn, sno, name, address, lat,
+       		lng, rcount ,regdate, updatedate
+       		from tbl_store
+        	where sno>0	and rownum <=(#{page}*#{perSheet})
+         	)
+where rn > (#{page}-1) * #{perSheet}
+  ]]>
+	</select>
+
+
+	<select id="getOne" resultType="Store">
+     <![CDATA[
+  select * from tbl_store where sno = #{sno}
+    ]]>
+	</select>
+
+	<insert id="insert">
+    <![CDATA[
+  insert into tbl_store (sno,name,lat,lng,menu)
+  values(seq_store.nextval, #{name}, #{lat}, #{lng}, #{menu})
+    ]]>
+	</insert>
+
+	<delete id="delete">
+     <![CDATA[
+   delete from tbl_store where sno = #{sno}
+     ]]>
+	</delete>
+
+	<delete id="deleteReview">
+     <![CDATA[
+   delete from tbl_review where sno = #{sno}
+     ]]>
+	</delete>
+
+	<update id="update">
+     <![CDATA[
+   update tbl_store set name = #{name}, lat = #{lat}, lng = #{lng}, menu = #{menu}
+   where sno = #{sno}
+     ]]>
+	</update>
+
+	<select id="getTotal" resultType="int">
+	<![CDATA[
+		select count(sno) from tbl_store
+	]]>
+	</select>
+
+
+
+</mapper>
